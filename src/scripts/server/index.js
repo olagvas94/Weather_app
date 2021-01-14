@@ -12,19 +12,36 @@ const client = new MongoClient(url);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
-app.get('/students/:id', (req, res) => {
-    let student = students.find(student => student.id === Number(req.params.id))
-    res.send(student);
+app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    next();
+})
+app.get('/cities', (req, res) => {
+    db.collection('cities').find().toArray((err, docs) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(500);
+        }
+        res.send(docs)
+    })
 })
 
-app.post('/students', (req, res) => {
-    let student = {
-        id: Date.now(),
-        name: req.body.name
+app.post('/add', (req, res) => {
+    if (req.body.name) {
+        let city = {
+            name: req.body.name
+        }
+        db.collection('cities').insertOne(city, (err, result) => {
+            if (err) {
+                return res.sendStatus(500);
+            } else {
+                res.send(result.ops[0]._id);
+            }
+        })
     }
-    student.push(student);
-    res.send(student);
+
 })
 
 app.put('/students:id', (req, res) => {
@@ -33,9 +50,14 @@ app.put('/students:id', (req, res) => {
     res.sendStatus(200);
 })
 
-app.delete('/students/:id', (req, res) => {
-    students = students.filter(student => student.id !== Number(req.params.id));
-    res.sendStatus(200);
+app.delete('/:id', (req, res) => {
+    db.collection('cities').deleteOne({_id: ObjectId(req.params.id)}, (err, docs) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(500);
+        }
+        res.sendStatus(200);
+    })
 })
 
 client.connect(function(err) {

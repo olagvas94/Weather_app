@@ -3,9 +3,10 @@ class View {
         this.buttonAdd = document.getElementById('addCity');
         this.container = document.getElementById('container');
         }
-    makeCityBlock(response, imageurl) {
+    makeCityBlock(response, imageurl, id) {
         const div = document.createElement('div');
         div.classList.add('city');
+        div.setAttribute('id', id);
         this.container.append(div);
         const p = document.createElement('p');
         const img = document.createElement('img');
@@ -26,6 +27,7 @@ class Model {
         promise
         .then(response => {
             if (response.ok && response.status === 200) {
+                
                 return response.json();
             } else {
                 return Promise.reject(response.status);
@@ -33,12 +35,37 @@ class Model {
         })
         .then(response => 
             {console.log(response);
-                let imageurl = `http://openweathermap.org/img/wn/${response['weather'][0].icon}@2x.png`
-                this.view.makeCityBlock(response, imageurl);
+                this.addCityDb(response);
+                
             })
         .catch(err => console.log(err))
     
-}
+    }
+    addCityDb(weather) {
+        let city = {
+            name: weather.name
+        }
+        let promise = fetch('http://localhost:3333/add', {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json;charset=utf-8"
+            },
+            body: JSON.stringify(city)
+        })
+        promise.then(response => {
+            if (response.ok && response.status === 200) {
+                return response.json();
+                              
+            } else {
+                Promise.reject(response.status)
+            }
+        })
+        .then(id => {
+            let imageurl = `http://openweathermap.org/img/wn/${weather['weather'][0].icon}@2x.png`
+            this.view.makeCityBlock(weather, imageurl, id);
+        })
+        .catch(error => console.log(error))
+    }
 }
 class Controller {
     constructor (model) {
@@ -47,7 +74,7 @@ class Controller {
     watchClicks() {
         this.model.view.container.addEventListener('click', (event) => {
             if (event.target.id === "addCity") {
-               this.model.addNewCity(event.target.previousElementSibling.value)
+                this.model.addNewCity(event.target.previousElementSibling.value)
                 
             }
         })
