@@ -17,17 +17,29 @@ class View {
         div.setAttribute('id', id);
         this.container.append(div);
         const p = document.createElement('p');
+        const temp = document.createElement('p');
+        temp.innerHTML = Math.floor(response.main.temp - 273.15) + '&deg C';
         const img = document.createElement('img');
         img.setAttribute('src', imageurl)
         const span = document.createElement('span');
         p.innerHTML = response.name;
-        div.append(p, img, enterDiv);
+        div.append(p, img, temp, enterDiv);
         enterDiv.append(deleteButton, edit);
     }   
     removeCityBlock(id) {
         let cityBlock = document.getElementById(id);
         cityBlock.remove();
     } 
+    editPressed(id) {
+            const block = document.getElementById(id);
+            const input = document.createElement('input');
+            const button = document.createElement('button');
+            button.innerHTML = 'SAVE';
+            button.id = 'save'
+            block.querySelector('p').classList.toggle('hidden');
+            block.prepend(input, button);
+
+    }
 }
 class Model {
     constructor(view) {
@@ -53,6 +65,50 @@ class Model {
             })
         .catch(err => console.log(err))
     
+    }
+    editCity = (cityname, id) => {
+        let apiKey = "14e4636d12aa76d46bf7bef58bb56add";
+        let url = "https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&appid=" + apiKey;
+        let promise = fetch(url);
+        promise
+        .then(response => {
+            if (response.ok && response.status === 200) {
+                
+                return response.json();
+            } else {
+                return Promise.reject(response.status);
+            }
+        })
+        .then(response => {
+            document.getElementById(id).remove();
+            this.editOnServ(id, cityname);
+            let imageurl = `http://openweathermap.org/img/wn/${response['weather'][0].icon}@2x.png`;
+            this.view.makeCityBlock(response, imageurl, id);
+                
+        })
+        .catch(err => console.log(err))
+
+    }
+    editOnServ(id, cityname) {
+        let city = {
+            name : cityname
+        }
+        let promise = fetch('http://localhost:3333/' + id, {
+            method: "PUT",
+            headers: {
+                'Content-type':'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(city)
+        })
+        .then(response => {
+            if (response.ok && response.status === 200) {
+                return response.text()
+            } else {
+                return Promise.reject(response.status);     
+            }
+        })
+        .then(response => console.log(response))
+        .catch(err => console.log(err));        
     }
     initCityWeather(cityname, id) {
         let apiKey = "14e4636d12aa76d46bf7bef58bb56add";
@@ -145,6 +201,11 @@ class Controller {
                 
             } else if (event.target.id === "delete") {
                 this.model.deleteCity(event.target.parentNode.parentNode.id);
+            } else if (event.target.id === "edit") {
+               this.model.view.editPressed(event.target.parentNode.parentNode.id)
+                // this.model.editCity(event.target.parentNode.parentNode.id);
+            } else if (event.target.id === "save") {
+                this.model.editCity(event.target.previousSibling.value, event.target.parentNode.id)
             }
         })
     }

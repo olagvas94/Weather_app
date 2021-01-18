@@ -44,11 +44,18 @@ app.post('/add', (req, res) => {
 
 })
 
-// app.put('/students:id', (req, res) => {
-//     let student = students.find(student => student.id === Number(req.params.id))
-//     student.mane = req.body.name
-//     res.sendStatus(200);
-// })
+app.put('/' + ':id', (req, res) => {
+    
+    db.collection('cities').updateOne({_id: ObjectId(req.params.id)}, {$set: {
+        name: req.body.name
+        }}, (err) => {
+        if (err) {
+            return res.sendStatus(500);
+        }
+        res.sendStatus(200);
+
+    })
+})
 
 app.get('/' + ':id', (req, res) => {
     db.collection('cities').findOne({_id: ObjectId(req.params.id)}, (err, docs) => {
