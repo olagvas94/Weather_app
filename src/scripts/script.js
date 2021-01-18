@@ -5,9 +5,14 @@ class View {
         }
     makeCityBlock(response, imageurl, id) {
         const div = document.createElement('div');
+        const enterDiv = document.createElement('div');
+        enterDiv.className = 'enter__div';
         const deleteButton = document.createElement('button');
         deleteButton.id = 'delete';
         deleteButton.innerHTML = "DELETE CITY";
+        const edit = document.createElement('button')
+        edit.id = 'edit';
+        edit.innerHTML = 'EDIT CITY';
         div.classList.add('city');
         div.setAttribute('id', id);
         this.container.append(div);
@@ -16,8 +21,13 @@ class View {
         img.setAttribute('src', imageurl)
         const span = document.createElement('span');
         p.innerHTML = response.name;
-        div.append(p, img, deleteButton);
-    }    
+        div.append(p, img, enterDiv);
+        enterDiv.append(deleteButton, edit);
+    }   
+    removeCityBlock(id) {
+        let cityBlock = document.getElementById(id);
+        cityBlock.remove();
+    } 
 }
 class Model {
     constructor(view) {
@@ -106,6 +116,23 @@ class Model {
          }))
     .catch(err => console.log(err))
     }
+    deleteCity(id) {
+        let promise = fetch('http://localhost:3333/' + id, {
+            method: 'DELETE'
+        })
+        promise
+        .then(response => {
+            if (response.ok && response.status === 200) {
+                return response.text();
+                              
+            } else {
+                Promise.reject(response.status)
+            }
+        })
+        .then(res => this.view.removeCityBlock(id))
+        .catch(err => console.log(err))
+    
+    }
 }
 class Controller {
     constructor (model) {
@@ -116,6 +143,8 @@ class Controller {
             if (event.target.id === "addCity") {
                 this.model.addNewCity(event.target.previousElementSibling.value)
                 
+            } else if (event.target.id === "delete") {
+                this.model.deleteCity(event.target.parentNode.parentNode.id);
             }
         })
     }

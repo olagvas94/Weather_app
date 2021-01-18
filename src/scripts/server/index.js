@@ -1,7 +1,7 @@
 let express = require('express');
 let bodyParser = require('body-parser');
 let MongoClient = require('mongodb').MongoClient;
-
+let ObjectId = require('mongodb').ObjectID;
 
 let app = express();
 let db;
@@ -44,13 +44,22 @@ app.post('/add', (req, res) => {
 
 })
 
-app.put('/students:id', (req, res) => {
-    let student = students.find(student => student.id === Number(req.params.id))
-    student.mane = req.body.name
-    res.sendStatus(200);
-})
+// app.put('/students:id', (req, res) => {
+//     let student = students.find(student => student.id === Number(req.params.id))
+//     student.mane = req.body.name
+//     res.sendStatus(200);
+// })
 
-app.delete('/:id', (req, res) => {
+app.get('/' + ':id', (req, res) => {
+    db.collection('cities').findOne({_id: ObjectId(req.params.id)}, (err, docs) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(500);
+        }
+        res.send(docs);
+    })
+})
+app.delete('/' + ':id', (req, res) => {
     db.collection('cities').deleteOne({_id: ObjectId(req.params.id)}, (err, docs) => {
         if (err) {
             console.log(err);
