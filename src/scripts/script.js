@@ -189,6 +189,9 @@ class Model {
         .catch(err => console.log(err))
     
     }
+    getToPrivatBank() {
+        let promise = fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5 ')
+    }
 }
 class Controller {
     constructor (model) {
