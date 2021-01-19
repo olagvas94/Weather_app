@@ -1,3 +1,13 @@
+body {
+    background: url(https://w-dog.ru/wallpapers/9/10/460293184986657/pejzazh-priroda-nebo-oblaka-goluboe-nebo-den-rozovyj-fon-oboi-shirokoformatnye-polnoekrannye-shirokoekrannye-shirokoformatnyj.jpg) no-repeat;
+    font-family: 'Montserrat', sans-serif;
+}
+button {
+    
+    background: #f7ba43;
+    border: none;
+}
+
 .divstart {
     width: 80%;
     margin: 0 auto;
@@ -5,10 +15,19 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+.divstart input {
+    width: 40%;
+    height: 32px;
+    border-radius: 5px;
+    border: none;
+    margin-right: 30px;
+}
 .city {
-    width: 100%;
+    background: #ffffff;
+    border-radius: 5px;
+    width: 80%;
     height: auto;
-    border: 1px solid black;
+    /* border: 1px solid grey; */
     display: flex;
     flex-wrap: wrap;
     margin: 10px 0;
@@ -19,6 +38,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    text-transform: uppercase;
 }
 
 .hidden {
@@ -29,14 +49,48 @@
     display: flex;
     justify-content: space-between;
     height: 150px;
+    width: 64%;
+    
 }
 
 .my__weather {
     width: 40%;    
-    border: 1px solid red;
+    background: #fff;
+    border-radius: 5px;
+    text-align: center;
+}
+.my__weather button {
+    padding: 10px 190px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 14px;
+
 }
 
 .exchange__rates {
     width: 40%;
-    border: 1px solid red;
+    background: #fff;
+    border-radius: 5px;
+    text-align: center;
+}
+.exchange__rates button {
+    padding: 10px 177px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+.wrapper {
+    width: 80%;
+}
+.enter__div {
+    display: flex;
+    align-items: center;
+}
+.enter__div button {
+    margin: 10px;
+    padding: 10px 35px;
+    border-radius: 5px;
+    font-size: 14px;
 }
