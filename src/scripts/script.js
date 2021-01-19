@@ -2,6 +2,7 @@ class View {
     constructor() {
         this.buttonAdd = document.getElementById('addCity');
         this.container = document.getElementById('container');
+        this.wrapper = document.getElementById('wrapper');
         }
     makeCityBlock(response, imageurl, id) {
         const div = document.createElement('div');
@@ -39,6 +40,28 @@ class View {
             block.querySelector('p').classList.toggle('hidden');
             block.prepend(input, button);
 
+    }
+    moneyRate(response) {
+        const currencyUSDUAH = document.createElement('p');
+        const numbersUSDUAH = document.createElement('p');
+        currencyUSDUAH.innerHTML = `${response[0].ccy} / ${response[0].base_ccy}`;
+        numbersUSDUAH.innerHTML = `${Number(response[0].buy).toPrecision(4)} / ${Number(response[0].sale).toPrecision(4)}`
+        const currencyEURUAH = document.createElement('p');
+        currencyEURUAH.innerHTML = `${response[1]}`
+        this.wrapper.lastElementChild.append(currencyUSDUAH, numbersUSDUAH);
+
+    }
+    pictureGeoWidget(weather) {
+        const weatherWidget = document.getElementById('wrapper').firstElementChild;
+        const city = document.createElement('h3');
+        const tempreture = document.createElement('p');
+        city.innerHTML = weather.name;
+        tempreture.innerHTML = Math.floor(weather.main.temp - 273.15) + '&deg C';
+        weatherWidget.append(city, tempreture)
+    }
+    clierCarenci() {
+        const block = document.getElementById('wrapper').lastElementChild;
+        block.innerHTML = '';
     }
 }
 class Model {
@@ -189,8 +212,51 @@ class Model {
         .catch(err => console.log(err))
     
     }
-    getToPrivatBank() {
-        let promise = fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5 ')
+    getToPrivatBank = () => {
+        this.view.clierCarenci()
+        let promise = fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5')
+        
+        promise
+        .then(response => {
+            if (response.ok && response.status === 200) {
+                
+                return response.json();
+            } else {
+                return Promise.reject(response.status);
+            }
+        })
+        .then(response => {
+            this.view.moneyRate(response);
+        })
+        .catch(err => console.log(err))
+    }
+    initGeoWidget = () => {
+        let success = (position) => {
+            const lat  = position.coords.latitude;
+            const lon = position.coords.longitude;
+            let promise = fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=14e4636d12aa76d46bf7bef58bb56add`);
+            promise
+                .then((res => {
+                    if (res.ok && res.status === 200) {
+                        return res.json();
+                    } else {
+                        return Promise.reject(res.status);
+                    }}))
+                .then(res => this.view.pictureGeoWidget(res))
+                .catch(err => console.log(err))
+        }
+
+        let error = () => {
+            
+        }
+
+        if(!navigator.geolocation) {
+           // this.view.geoWidgetWait('Geolocation is not supported by your browser');
+        } else {
+            // this.view.geoWidgetWait('Locating…');
+            navigator.geolocation.getCurrentPosition(success, error);
+        }
+
     }
 }
 class Controller {
@@ -198,6 +264,14 @@ class Controller {
         this.model = model;
     }
     watchClicks() {
+        this.model.view.wrapper.addEventListener('click', (event) => {
+            if (event.target.id === "exchangeButton"){
+                this.model.getToPrivatBank();
+                setInterval(this.model.getToPrivatBank, 3600000)
+            } else if (event.target.id === "giv__weather") {
+                this.model.initGeoWidget()
+            }
+        })
         this.model.view.container.addEventListener('click', (event) => {
             if (event.target.id === "addCity") {
                 this.model.addNewCity(event.target.previousElementSibling.value)

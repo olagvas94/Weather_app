@@ -15,15 +15,28 @@
 }
 
 .city p {
-    width: 30%;
+    width: 32%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .hidden {
     display: none!important;
 }
 
+.div__flex {
+    display: flex;
+    justify-content: space-between;
+    height: 150px;
+}
 
+.my__weather {
+    width: 40%;    
+    border: 1px solid red;
+}
 
-
+.exchange__rates {
+    width: 40%;
+    border: 1px solid red;
+}
