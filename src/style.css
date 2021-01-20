@@ -8,6 +8,9 @@ button {
     border: none;
 }
 
+button:hover {
+    background: #f2912a;
+}
 .divstart {
     width: 80%;
     margin: 0 auto;
@@ -16,11 +19,16 @@ button {
     flex-wrap: wrap;
 }
 .divstart input {
-    width: 40%;
+    width: 45%;
     height: 32px;
     border-radius: 5px;
     border: none;
     margin-right: 30px;
+}
+#addCity {
+    border-radius: 5px;
+    font-size: 14px;
+    width: 10%;
 }
 .city {
     background: #ffffff;
@@ -40,7 +48,20 @@ button {
     align-items: center;
     text-transform: uppercase;
 }
+.city input {
+    border: 1px solid grey;
+    width: 84.5%;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 20px;
+}
 
+#save {
+    width: 11%;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
 .hidden {
     display: none!important;
 }
